@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<!-- This template is modified by Seth Nielson for creating P-RFC's
+    (Playground-RFC's). -->
+<!-- This template is for creating an Internet Draft using xml2rfc,
+    which is available here: http://xml2rfc.ietf.org. -->
+<!DOCTYPE rfc SYSTEM "rfc2629.dtd" [
+<!-- One method to get references from the online citation libraries.
+    There has to be one entity for each item to be referenced. 
+    An alternate method (rfc include) is described in the references. -->
+
+<!ENTITY RFC2119 SYSTEM "http://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.2119.xml">
+<!ENTITY RFC2629 SYSTEM "http://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.2629.xml">
+<!ENTITY RFC3552 SYSTEM "http://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.3552.xml">
+<!ENTITY RFC5226 SYSTEM "http://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.5226.xml">
+]>
+<?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
+<!-- used by XSLT processors -->
+<!-- For a complete list and description of processing instructions (PIs), 
+    please see http://xml2rfc.ietf.org/authoring/README.html. -->
+<!-- Below are generally applicable Processing Instructions (PIs) that most I-Ds might want to use.
+    (Here they are set differently than their defaults in xml2rfc v1.32) -->
+<?rfc strict="yes" ?>
+<!-- give errors regarding ID-nits and DTD validation -->
+<!-- control the table of contents (ToC) -->
+<?rfc toc="yes"?>
+<!-- generate a ToC -->
+<?rfc tocdepth="4"?>
+<!-- the number of levels of subsections in ToC. default: 3 -->
+<!-- control references -->
+<?rfc symrefs="yes"?>
+<!-- use symbolic references tags, i.e, [RFC2119] instead of [1] -->
+<?rfc sortrefs="yes" ?>
+<!-- sort the reference entries alphabetically -->
+<!-- control vertical white space 
+    (using these PIs as follows is recommended by the RFC Editor) -->
+<?rfc compact="yes" ?>
+<!-- do not start each main section on a new page -->
+<?rfc subcompact="no" ?>
+<!-- keep one blank line between list items -->
+<!-- end of list of popular I-D processing instructions -->
+
+
+
+
+<rfc category="std" docName="p_rfc_reliable" ipr="playgroundSpring201604" number="1">
+ <!-- category values: std, bcp, info, exp, and historic
+    ipr values: trust200902, noModificationTrust200902, noDerivativesTrust200902,
+       or pre5378Trust200902, playgroundWinter201501
+    you can add the attributes updates="NNNN" and obsoletes="NNNN" 
+    they will automatically be output with "(if approved)" -->
+
+ <!-- ***** FRONT MATTER ***** -->
+
+ <front>
+   <!-- The abbreviated title is used in the page header - it is only necessary if the 
+        full title is longer than 39 characters -->
+
+   <title abbrev="PRFC PEIRC Proposal Lab#2">Playground Request For Comments - Protocol for Excessively Informative Reliable Communication (PEIRC) (Lab#2)</title>
+
+   <!-- add 'role="editor"' below for the editors if appropriate -->
+
+   <!-- Another author who claims to be an editor -->
+
+   <author fullname="Fady Barsoum" initials="FB" role="editor"
+           surname="Barsoum">
+     <organization>JHU Network Security Fall 2016</organization>
+
+     <address>
+       <postal>
+         <street>JHU 160 Malone Hall/3400 North Charles St.</street>
+
+         <!-- Reorder these if your country does things differently -->
+
+         <city>Baltimore</city>
+
+         <region>MD</region>
+
+         <code>21218</code>
+
+         <country>USA</country>
+       </postal>
+
+       <phone>+1 410-497-7384</phone>
+
+       <email>fady.barsoum@jhu.edu</email>
+
+       <!-- uri and facsimile elements may also be added -->
+     </address>
+   </author>
+
+   <date year="2016" month="September"/>
+
+   <!-- If the month and year are both specified and are the current ones, xml2rfc will fill 
+        in the current day for you. If only the current year is specified, xml2rfc will fill 
+	 in the current day and month for you. If the year is not the current one, it is 
+	 necessary to specify at least a month (xml2rfc assumes day="1" if not specified for the 
+	 purpose of calculating the expiry date).  With drafts it is normally sufficient to 
+	 specify just the year. -->
+
+   <!-- Meta-data Declarations -->
+
+   <area>General</area>
+
+   <workgroup>Playground Experiment Director</workgroup>
+
+   <!-- WG name at the upperleft corner of the doc,
+        IETF is fine for individual submissions.  
+	 If this element is not present, the default is "Network Working Group",
+        which is used by the RFC Editor as a nod to the history of the IETF. -->
+
+   <keyword>PRFC</keyword>
+   <keyword>Playground Request for Comment</keyword>
+   <keyword>Reliability</keyword>
+   <keyword>PEIRC</keyword>
+   <keyword>XML</keyword>
+
+   <!-- Keywords will be incorporated into HTML output
+        files in a meta tag but they have no effect on text or nroff
+        output. If you submit your draft to the RFC Editor, the
+        keywords will be used for the search engine. -->
+
+   <abstract>
+     <t>This Playground RFC describes the Protocol for Excessively Informative Reliable Communication (PEIRC) on the Transport Layer of a network. PEIRC aims to reduce some of the vulnerabilities, ambiguities, and unreliabilities of TCP by providing extra pieces of information in each message that are used to make congestion control decisions on both ends of a connection, while also helping participants detect and diagnose the source of these issues. </t>
+   </abstract>
+ </front>
+
+ <middle>
+   <section title="Introduction">
+     <t>Protocol for Excessively Informative Reliable Communication (PEIRC) is a Transport Layer protocol based on TCP which is intended as an overlay over the Playground network. PEIRC aims to reduce some of the vulnerabilities, ambiguities, and unreliabilities of TCP by providing extra pieces of information that are used to make congestion control decisions on both ends of a connection, while also helping participants detect and diagnose the source of these issues. It uses intelligent timestamps and numbering to maintain order, confirm receipt and integrity of messages, and detect inconsistencies and issues.</t>
+   </section>
+   <section title="Requirements Language">
+ 		 <t>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+"SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
+document are to be interpreted as described in <xref
+target="RFC2119">RFC 2119</xref>.</t>
+	 </section>
+   <section title="Overview">
+    <t>PEIRC is based entirely on TCP except dictionary-type messages are used instead of packets and the following:
+   	<section title="TCP Handshake">
+   		<t>The TCP handshake is used in PEIRC, with the addition of a timestamp being communicated and recorded by each side. Details on the use of these timestamps is below.</t> 
+   	</section>
+   	<section title="Message Numbering">
+   		<t>Message numbering in PEIRC is similar to TCP except that the numbers are unique, meaning even a retransmission gets a new number. This aids the receiver in detecting when a message has been dropped and retransmitted.</t> 
+   	</section>
+   	<section title="2-Way Weighted Congestion Control">
+   	<t>Each message is timestamped to the nanosecond by the sender with when it was sent and when the receiver's last message was received by the sender. While timestamps from two endpoints cannot be directly compared, keeping a history of these timestamps and how they compare with the local time can help an endpoint determine the cause of the delays. They can also be used to detect address spoofing attempts.</t>
+   	<t>Congestion control at endpoints uses this awareness of connection issues to intelligiently determine how to throttle connections. For example, if only one connection is experiencing dropped messages, only that connection is throttled. On the other hand if all connections are experiencing issues, a global throttling value compensates.</t>
+   	</section>
+   	<section title="Notifications">
+   	<t>Endpoints can notify each other using certain flags in the message when they detect issues. For example, in a spoofed address attempt, when an unsolicited non-SYN message is received, the receiver notifies the sender that they never initiated this connection. When a sender retransmits a message, the corresponding flag is set in the message to notify the receiver. </t>
+   	</section>
+   	<section title="Hash Checksum">
+   	<t>Instead of a basic checksum, PEIRC uses SHA-256 to calculate a hash of the message's contents than can be used to verify integrity of the contents. (Specifically, the entire message is formed without the hash value, then the hash is calculated and added to the message. The receiver removes the hash value from the message before calculating it to compare.)</t>
+   	</section>
+   </section>
+   <section title="Message Details">
+   <t>PEIRC messages follow the following dictionary-type layout:
+   class PEIRCMessage(MessageDefinition):
+			PLAYGROUND_IDENTIFIER = "apps.PERIC.PEIRCMessage"
+			MESSAGE_VERSION = "1.0"
+			BODY = [ 	("source_port", STRING),
+								("destination_port", STRING),
+								("date", STRING),
+								("subject_line", STRING),
+								("thread_id", UINT4),
+								("body", STRING) ]
+   </section>
+   <section title="Security Considerations">
+   <t>This specification is a documentation standard and not directly related
+   to the technical security of any protocol.</t>
+   </section>
+ </middle>
+
+ <!--  *****BACK MATTER ***** -->
+
+ <back>
+   <!-- References split into informative and normative -->
+
+   <!-- There are 2 ways to insert reference entries from the citation libraries:
+    1. define an ENTITY at the top, and use "ampersand character"RFC2629; here (as shown)
+    2. simply use a PI "less than character"?rfc include="reference.RFC.2119.xml"?> here
+       (for I-Ds: include="reference.I-D.narten-iana-considerations-rfc2434bis.xml")
+
+    Both are cited textually in the same manner: by using xref elements.
+    If you use the PI option, xml2rfc will, by default, try to find included files in the same
+    directory as the including file. You can also define the XML_LIBRARY environment variable
+    with a value containing a set of directories to search.  These can be either in the local
+    filing system or remote ones accessed by http (http://domain/dir/... ).-->
+
+   <references title="Normative References">
+     <!--?rfc include="http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2119.xml"?-->
+     &RFC2119;
+     
+     <!--&RFC2360;-->
+     
+   </references>
+
+   <!-- Change Log
+
+
+v00 2016-09-24	FB	Drafted the PEIRC Protocol
+  -->
+ </back>
+</rfc>

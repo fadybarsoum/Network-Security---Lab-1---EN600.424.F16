@@ -1,0 +1,392 @@
+
+
+
+Network Working Group                                   FB. Barsoum, Ed.
+Request for Comments: 1                   JHU Network Security Fall 2016
+Category: Standards Track                                 September 2016
+
+
+ Playground Request For Comments - Protocol for Excessively Informative
+                 Reliable Communication (PEIRC) (Lab#2)
+
+Abstract
+
+   This Playground RFC describes the Protocol for Excessively
+   Informative Reliable Communication (PEIRC) on the Transport Layer of
+   a network.  PEIRC aims to reduce some of the vulnerabilities,
+   ambiguities, and inefficiencies of TCP by providing several extra
+   pieces of information in each message that are used to make
+   congestion control decisions on both ends of a connection, while also
+   helping participants detect and diagnose the source of these issues.
+
+Status of this Memo
+
+   This document specifies a Playgrounds standards track protocol for
+   the Playground Experiment, and requests discussion and suggestions
+   for improvements.  Distribution of this memo is unlimited.
+
+Copyright Notice
+
+   Copyright (c) 2016 SETH JAMES NIELSON.  All rights reserved.
+
+   This document is used solely for educational purposes.  Any citations
+   within this document are also for educational purposes and also for
+   technical reference.  If any of these cited elements are protected
+   under copyright, their inclusion here falls under Fair Use
+   provisions.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Barsoum                      Standards Track                    [Page 1]
+
+RFC 1                   PRFC PEIRC Proposal Lab#2         September 2016
+
+
+Table of Contents
+
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . . . 3
+   2.  Requirements Language . . . . . . . . . . . . . . . . . . . . . 3
+   3.  Security Considerations . . . . . . . . . . . . . . . . . . . . 3
+   4.  Normative References  . . . . . . . . . . . . . . . . . . . . . 3
+   Appendix A.  Full Copyright Information . . . . . . . . . . . . . . 3
+   Appendix B.  Intellectual Property  . . . . . . . . . . . . . . . . 4
+   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . . . 5
+   Intellectual Property and Copyright Statements  . . . . . . . . . . 6
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Barsoum                      Standards Track                    [Page 2]
+
+RFC 1                   PRFC PEIRC Proposal Lab#2         September 2016
+
+
+1.  Introduction
+
+   Protocol for Excessively Informative Reliable Communication (PEIRC)
+   is a Transport Layer protocol based on TCP which is intended as an
+   overlay over the Playground network.  PEIRC aims to reduce some of
+   the vulnerabilities, ambiguities, and inefficiencies of TCP by
+   providing several extra pieces of information that are used to make
+   congestion control decisions on both ends of a connection, while also
+   helping participants detect and diagnose the source of these issues.
+   It uses intelligent timestamps and numbering to maintain order,
+   confirm receipt and integrity of messages, and detect inconsistencies
+   and issues.
+
+
+2.  Requirements Language
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
+   document are to be interpreted as described in RFC 2119 [RFC2119].
+
+
+3.  Security Considerations
+
+   This specification is a documentation standard and not directly
+   related to the technical security of any protocol.
+
+
+4.  Normative References
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119, DOI 10.17487/
+              RFC2119, March 1997,
+              <http://www.rfc-editor.org/info/rfc2119>.
+
+
+Appendix A.  Full Copyright Information
+
+   The PLAYGROUND experiment is still new and has not yet developed a
+   policy that has been reviewed by legal counsel.
+
+   Student authors MUST grant copyrights to SETH JAMES NIELSON.
+   However, they may also retain copyrights for themselves and add their
+   names to the copyright notice accordingly.
+
+   Copyright (C) Seth James Nielson (2016).  All Rights Reserved.
+
+   Copyright (C) Fady Barsoum (2016).  All Rights Reserved.
+
+
+
+
+Barsoum                      Standards Track                    [Page 3]
+
+RFC 1                   PRFC PEIRC Proposal Lab#2         September 2016
+
+
+   This document and translations of it may be copied and furnished to
+   others, and derivative works that comment on or otherwise explain it
+   or assist in its implementation may be prepared, copied, published
+   and distributed, in whole or in part, without restriction of any
+   kind, provided that the above copyright notice and this paragraph are
+   included on all such copies and derivative works.  However, this
+   document itself may not be modified in any way, such as by removing
+   the copyright notice or references to the PLAYGROUND experiment or
+   other associated organizations, except by explicit permission.
+
+   The limited permissions granted above are perpetual and will not be
+   revoked by SETH JAMES NIELSON and FADY BARSOUMS or their successors
+   or assigns.
+
+   This document and the information contained herein is provided on an
+   "AS IS" basis and SETH JAMES NIELSON and associated academic
+   institutions DISCLAIM ALL WARRANTIES, EXPRESS OR IMPLIED, INCLUDING
+   BUT NOT LIMITED TO ANY WARRANTY THAT THE USE OF THE INFORMATION
+   HEREIN WILL NOT INFRINGE ANY RIGHTS OR ANY IMPLIED WARRANTIES OF
+   MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE."
+
+
+Appendix B.  Intellectual Property
+
+   The PLAYGROUND framework and student submissions for PLAYGROUND are
+   intended to be free of any intellectual property conflicts.  All
+   submitting parties, especially students, are not allowed to submit
+   source code, specifications, or other components that are known to be
+   protected by copyright, patents, or other IP mechanisms.  Students
+   submitting creative content grant shared rights and ownership of
+   their content to the PLAYGROUND project.  Specifically, any
+   submission can be used in future educational settings including
+   subsequent PLAYGROUND experiments.
+
+   Any interested party is invited to bring to the experiment director's
+   attention any copyrights, patents or patent applications, or other
+   proprietary rights which may cover technology that may be currently
+   in use without permission.
+
+   It should be noted that these statements have not been reviewed by
+   legal counsel.  Moreover, the academic institutions at which
+   PLAYGROUND experiments take place may have additional or even
+   conflicting copyright and intellectual property rules.  Accordingly,
+   concerned parties may need to contact their own lawyer and/or
+   resources at their institution to understand the rights and
+   limitations associated with code donated to a PLAYGROUND experiment."
+
+   As with the initial copyright notice, the Copyright assignment to
+
+
+
+Barsoum                      Standards Track                    [Page 4]
+
+RFC 1                   PRFC PEIRC Proposal Lab#2         September 2016
+
+
+   Seth James Nielson and Fady Barsoum can be agumented the the names of
+   the authors.
+
+
+Author's Address
+
+   Fady Barsoum (editor)
+   JHU Network Security Fall 2016
+   JHU 160 Malone Hall/3400 North Charles St.
+   Baltimore, MD  21218
+   USA
+
+   Phone: +1 410-497-7384
+   Email: fady.barsoum@jhu.edu
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Barsoum                      Standards Track                    [Page 5]
+
+RFC 1                   PRFC PEIRC Proposal Lab#2         September 2016
+
+
+Full Copyright Statement
+
+   Copyright (C) Seth James Nielson (2016).  All Rights Reserved.
+
+   This document and translations of it may be copied and furnished to
+   others, and derivative works that comment on or otherwise explain it
+   or assist in its implementation may be prepared, copied, published
+   and distributed, in whole or in part, without restriction of any
+   kind, provided that the above copyright notice and this paragraph are
+   included on all such copies and derivative works.  However, this
+   document itself may not be modified in any way, such as by removing
+   the copyright notice or references to the PLAYGROUND experiment or
+   other associated organizations, except by explicit permission.
+
+   The limited permissions granted above are perpetual and will not be
+   revoked by SETH JAMES NIELSON or his successors or assigns.
+
+   This document and the information contained herein is provided on an
+   "AS IS" basis and SETH JAMES NIELSON and associated academic
+   institutions DISCLAIM ALL WARRANTIES, EXPRESS OR IMPLIED, INCLUDING
+   BUT NOT LIMITED TO ANY WARRANTY THAT THE USE OF THE INFORMATION
+   HEREIN WILL NOT INFRINGE ANY RIGHTS OR ANY IMPLIED WARRANTIES OF
+   MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
+
+
+Intellectual Property
+
+   The PLAYGROUND framework and student submissions for PLAYGROUND are
+   intended to be free of any intellectual property conflicts.  All
+   submitting parties, especially students, are not allowed to submit
+   source code, specifications, or other components that are known to be
+   protected by copyright, patents, or other IP mechanisms.  Students
+   submitting creative content grant shared rights and ownership of
+   their content to the PLAYGROUND project.  Specifically, any
+   submission can be used in future educational settings including
+   subsequent PLAYGROUND experiments.
+
+   Any interested party is invited to bring to the experiment director's
+   attention any copyrights, patents or patent applications, or other
+   proprietary rights which may cover technology that may be currently
+   in use without permission.
+
+   It should be noted that these statements have not been reviewed by
+   legal counsel.  Moreover, the academic institutions at which
+   PLAYGROUND experiments take place may have additional or even
+   conflicting copyright and intellectual property rules.  Accordingly,
+   concerned parties may need to contact their own lawyer and/or
+   resources at their institution to understand the rights and
+
+
+
+Barsoum                      Standards Track                    [Page 6]
+
+RFC 1                   PRFC PEIRC Proposal Lab#2         September 2016
+
+
+   limitations associated with code donated to a PLAYGROUND experiment.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Barsoum                      Standards Track                    [Page 7]
+
