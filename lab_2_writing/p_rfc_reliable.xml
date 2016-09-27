@@ -135,39 +135,112 @@ document are to be interpreted as described in <xref
 target="RFC2119">RFC 2119</xref>.</t>
 	 </section>
    <section title="Overview">
-    <t>PEIRC is based entirely on TCP except dictionary-type messages are used instead of packets and the following:
+    <t>PEIRC is based entirely on TCP except dictionary-type messages are used instead of packets and the following:</t>
    	<section title="TCP Handshake">
    		<t>The TCP handshake is used in PEIRC, with the addition of a timestamp being communicated and recorded by each side. Details on the use of these timestamps is below.</t> 
    	</section>
    	<section title="Message Numbering">
-   		<t>Message numbering in PEIRC is similar to TCP except that the numbers are unique, meaning even a retransmission gets a new number. This aids the receiver in detecting when a message has been dropped and retransmitted.</t> 
+   		<t>Message numbering in PEIRC is replaced with timestamping (described below) such that the numbers are unique, meaning even a retransmission gets a new number.</t> 
    	</section>
    	<section title="2-Way Weighted Congestion Control">
-   	<t>Each message is timestamped to the nanosecond by the sender with when it was sent and when the receiver's last message was received by the sender. While timestamps from two endpoints cannot be directly compared, keeping a history of these timestamps and how they compare with the local time can help an endpoint determine the cause of the delays. They can also be used to detect address spoofing attempts.</t>
+   	<t>Each message includes a local UNIX microseconds timestamp of when the message was sent and one for when the receiver's last message was received by the sender. While timestamps from two endpoints CANNOT be directly compared for many many reasons, keeping a history of these timestamps and how they compare with the previous timestamps and local timestamps can help an endpoint determine the cause of the delays and potentially to detect address spoofing attempts.</t>
    	<t>Congestion control at endpoints uses this awareness of connection issues to intelligiently determine how to throttle connections. For example, if only one connection is experiencing dropped messages, only that connection is throttled. On the other hand if all connections are experiencing issues, a global throttling value compensates.</t>
+   	<t>As a cautionary note, since the integrity hash is calculated and added to the message after the sent-timestamp, the sent-timestamp can be more accurately described as the message-formed-timestamp.</t>
    	</section>
-   	<section title="Notifications">
-   	<t>Endpoints can notify each other using certain flags in the message when they detect issues. For example, in a spoofed address attempt, when an unsolicited non-SYN message is received, the receiver notifies the sender that they never initiated this connection. When a sender retransmits a message, the corresponding flag is set in the message to notify the receiver. </t>
+   	<section title="Notifications and Flags">
+   	<t>Endpoints can notify each other using certain flags in the message when they detect issues. The following flags and behaviors MUST be implemented:
+		 	<list style="symbols">
+			 	<t>NMM - In a spoofed address attempt, when an unsolicited non-SYN message is received from the victim, the receiver notifies the sender that they never initiated this connection by setting the NMM flag, ostensibly along with a request to terminate this connection.</t>
+			 	<t>RPT - When a sender retransmits a message, the corresponding RPT flag is set in the message to notify the receiver.</t>
+			 	<t>BHR - When a message's calculated hash does not match the one included in the message, the receiver sends back a message with the BHR flag set, inducing the sender to retransmit the message.</t>
+			 	<t>CYC - When a receiver notices a discrepancy in the timestamps of the received messages, such as messages jumping around in time or a response being sent supposedly before the request was sent, a message with the CYC flag set is sent to the sender to alert them of the issue. This may help detect address spoofing attempts.</t>
+		 	</list>
+   	</t>
    	</section>
-   	<section title="Hash Checksum">
-   	<t>Instead of a basic checksum, PEIRC uses SHA-256 to calculate a hash of the message's contents than can be used to verify integrity of the contents. (Specifically, the entire message is formed without the hash value, then the hash is calculated and added to the message. The receiver removes the hash value from the message before calculating it to compare.)</t>
+   	<section title="Integrity Hash">
+   	<t>Instead of a basic checksum, PEIRC uses SHA-256 to calculate a hash of the message's contents than can be used to verify its integrity at the receiving endpoint. (Specifically, the entire message is formed without the hash value, then the hash is calculated and added to the message. The receiver removes the hash value from the message before calculating it to compare.)</t>
+   	</section>
+   	<section title="Recaps and Recap Requests">
+   	<t>Endpoints can request and send each other Recaps and Recap Requests. Recaps are messages that include a list ("recap-rcvd") of timestamps of correctly received messages within this connection. They can be sent voluntarily or by request. Recap Requests themselves include a list ("recap-rqst-sent") of timestamps of messages the sender has sent, including the one of the message the list is sent in and any retransmissions of past timestamps. Recaps serve to confirm that all sent messages have been received and also help detect anomolies. Voluntary Recaps SHOULD be used often as a form of ACK.</t>
    	</section>
    </section>
    <section title="Message Details">
-   <t>PEIRC messages follow the following dictionary-type layout:
-   class PEIRCMessage(MessageDefinition):
-			PLAYGROUND_IDENTIFIER = "apps.PERIC.PEIRCMessage"
-			MESSAGE_VERSION = "1.0"
-			BODY = [ 	("source_port", STRING),
-								("destination_port", STRING),
-								("date", STRING),
-								("subject_line", STRING),
-								("thread_id", UINT4),
-								("body", STRING) ]
+   <t>PEIRC messages follow the following dictionary-type layout (written here in Python):
+   <figure><artwork><![CDATA[
+class PEIRCMessage(MessageDefinition):
+  PLAYGROUND_IDENTIFIER = "apps.PERIC.PEIRCMessage"
+  MESSAGE_VERSION = "0.1"
+  BODY = [ ("src-addr", STRING),
+           ("dest-addr", STRING),
+           ("sent-timestamp", UINT8),
+           ("rcvd-timestamp", UINT8, OPTIONAL), #only optional in SYN
+           ("window", UINT2),
+           ("SYN", BOOL1, OPTIONAL),
+           ("ACK", BOOL1, OPTIONAL),
+           ("FIN", BOOL1, OPTIONAL),
+           ("NMM", BOOL1, OPTIONAL),
+           ("RPT", BOOL1, OPTIONAL),
+           ("BHR", BOOL1, OPTIONAL),
+           ("CYC", BOOL1, OPTIONAL),
+           ("recap-rcvd", LIST(UINT8), OPTIONAL),
+           ("recap-rqst-sent", LIST(UINT8), OPTIONAL),
+           ("data", STRING, OPTIONAL),
+           ("sha-256-integrity", STRING)]
+	 ]]></artwork></figure>
+	 </t>
+   </section>
+   <section title="Finite State Machine">
+     <section title="States Diagram">
+		   <t>As you'll notice, the FSM diagram of PEIRC is identical to TCP's. Not shown are the Recaps which can substitue for ACKs while including the timestamps of all other messages received as well. Not included also are retransmissions.</t>
+		   <figure><artwork><![CDATA[
+                    +----------------------------+
+                    | CLOSED |             active|
+                    +-+----^--<----------+   OPEN|
+                      |    |             |    snd|
+          passive OPEN|    |CLOSE        |    SYN|
+                      |    |             |       |
+                    +-v------+           |       |
+                    | LISTEN |      CLOSE|       |
+                    +--+--+--+           |       |
+           rcv SYN     |  |              |       |
++--------+ snd SYN/ACK |  |  snd SYN    ++-------v+
+|        <-------------+  +------------->         |
+|        |                              |         |
+|  SYN   |     rcv SYN / snd ACK        |  SYN    |
+|  RCVD  <------------------------------+  SENT   |
+|        |                              |         |
+|        +-------------+  +-------------+         |
++-+------+   rcv ACK   |  | rcv SYN/ACK +---------+
+  |           of SYN   |  | snd ACK
+  |                 +--v--v--+
+  |CLOSE            | ESTAB  |
+  |snd FIN          +-+----+-+
+  |                   |    |
+  |          CLOSE    |    |    rcv FIN
++-v-------+  snd FIN  |    |    snd ACK +---------+
+|  FIN    <-----------+    +------------>  CLOSE  |
+| WAIT-1  +------------+                |   WAIT  |
++-+-------+            |                +-------+-+
+  | rcv ACK of FIN     |rcv FIN                 |
+  |                    |snd ACK            CLOSE|
+  |                    |                 snd FIN|
++-v-------+          +-v-------+        +-------v-+
+|FINWAIT-2|          | CLOSING |        | LAST-ACK|
++-+-------+          +---------+        +-------+-+
+  |        rcv ACK of FIN |                     |
+  |                       |              rcv ACK|
+  |rcv FIN                | Timeout=2MSL        |
+  |snd ACK           +----v----+        +-------v-+
+  +------------------>TIME WAIT+--------> CLOSED  |
+                     +---------+        +---------+
+       ]]></artwork></figure>
+     </section>
+     <section title="States Details">
+       <t>See RFC 793 for full details.</t>
+     </section>
    </section>
    <section title="Security Considerations">
-   <t>This specification is a documentation standard and not directly related
-   to the technical security of any protocol.</t>
+   <t>By enforcing the communication of excess information, PEIRC facilitates the detection and diagnosis of reliability issues. However this also creates more potential avenues for attacks. PEIRC's goal is not to prevent such attacks, but rather focuses on detecting them and mitigating their effect. Since address spoofing in the Playground network will be particularly easy, the design of PEIRC focused primarily on mechanisms to quickly detect such attacks.</t>
    </section>
  </middle>
 
@@ -198,7 +271,7 @@ target="RFC2119">RFC 2119</xref>.</t>
    <!-- Change Log
 
 
-v00 2016-09-24	FB	Drafted the PEIRC Protocol
+v00 2016-09-26	FB	Drafted the PEIRC Protocol
   -->
  </back>
 </rfc>
